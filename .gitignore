@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Environments
+.env
+.venv/
+env/
+venv/
+
+# Local data and generated outputs
+datasets/
+/data/
+outputs/
+results/
+output/
+
+# Private experiments and analysis
+ablation/
+visualization/
+docs/
+experiments/
+
+# Large model/data artifacts
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.mat
+
+# Editor/system files
+.idea/
+.vscode/
+.ipynb_checkpoints/
+*.log

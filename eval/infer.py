@@ -1,0 +1,172 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+import argparse
+from tqdm import tqdm
+from acidnet.data.data import *
+from torchvision import transforms
+from torch.utils.data import DataLoader
+from acidnet.losses.criteria import *
+from acidnet.models.acidnet import ACIDNet
+from acidnet.paths import DATASET_ROOT, OUTPUT_ROOT, WEIGHT_ROOT
+
+
+def dataset_path(path):
+    return str(DATASET_ROOT / path)
+
+
+def output_path(name):
+    return str(OUTPUT_ROOT / "generated/output" / name) + "/"
+
+
+def resolve_weight(path):
+    return str(WEIGHT_ROOT / path)
+
+
+def eval(model, testing_data_loader, model_path, output_folder,norm_size=True,LOL=False,v2=False,unpaired=False,alpha=1.0,gamma=1.0):
+    torch.set_grad_enabled(False)
+    from acidnet.checkpoints import load_model_weights
+    load_model_weights(model, model_path, map_location=lambda storage, loc: storage)
+    print('Pre-trained model is loaded.')
+    model.eval()
+    print('Evaluation:')
+    if LOL:
+        model.trans.gated = True
+    elif v2:
+        model.trans.gated2 = True
+        model.trans.alpha = alpha
+    elif unpaired:
+        model.trans.gated2 = True
+        model.trans.alpha = alpha
+    for batch in tqdm(testing_data_loader):
+        with torch.no_grad():
+            if norm_size:
+                input, name = batch[0], batch[1]
+            else:
+                input, name, h, w = batch[0], batch[1], batch[2], batch[3]
+            
+            input = input.cuda()
+            output = model(input**gamma) 
+            
+        if not os.path.exists(output_folder):          
+            os.mkdir(output_folder)  
+            
+        output = torch.clamp(output.cuda(),0,1).cuda()
+        if not norm_size:
+            output = output[:, :, :h, :w]
+        
+        output_img = transforms.ToPILImage()(output.squeeze(0))
+        output_img.save(output_folder + name[0])
+        torch.cuda.empty_cache()
+    print('===> End evaluation')
+    if LOL:
+        model.trans.gated = False
+    elif v2:
+        model.trans.gated2 = False
+    torch.set_grad_enabled(True)
+    
+if __name__ == '__main__':
+    
+    eval_parser = argparse.ArgumentParser(description='Eval')
+    eval_parser.add_argument('--perc', action='store_true',default='true', help='trained with perceptual loss')
+    eval_parser.add_argument('--lol', action='store_true', help='output lolv1 dataset')
+    eval_parser.add_argument('--lol_v2_real', action='store_true', help='output lol_v2_real dataset')
+    eval_parser.add_argument('--lol_v2_syn', action='store_true', help='output lol_v2_syn dataset')
+    eval_parser.add_argument('--SICE_grad', action='store_true', help='output SICE_grad dataset')
+    eval_parser.add_argument('--SICE_mix', action='store_true', help='output SICE_mix dataset')
+
+    eval_parser.add_argument('--best_GT_mean', action='store_true',default='true', help='output lol_v2_real dataset best_GT_mean')
+    eval_parser.add_argument('--best_PSNR', action='store_true', help='output lol_v2_real dataset best_PSNR')
+    eval_parser.add_argument('--best_SSIM', action='store_true', help='output lol_v2_real dataset best_SSIM')
+
+    eval_parser.add_argument('--custome', action='store_true', help='output custome dataset')
+    eval_parser.add_argument('--custome_path', type=str, default='./YOLO')
+    eval_parser.add_argument('--unpaired', action='store_true',default='true', help='output unpaired dataset')
+    eval_parser.add_argument('--DICM', action='store_true', help='output DICM dataset')
+    eval_parser.add_argument('--LIME', action='store_true', help='output LIME dataset')
+    eval_parser.add_argument('--MEF', action='store_true', help='output MEF dataset')
+    eval_parser.add_argument('--NPE', action='store_true', help='output NPE dataset')
+    eval_parser.add_argument('--VV', action='store_true',default='true', help='output VV dataset')
+    eval_parser.add_argument('--alpha', type=float, default=1.0)
+    eval_parser.add_argument('--gamma', type=float, default=1.0)
+    eval_parser.add_argument('--unpaired_weights', type=str, default=resolve_weight('SCIE/SCIE.pth'))
+
+    ep = eval_parser.parse_args()
+
+
+    cuda = True
+    if cuda and not torch.cuda.is_available():
+        raise Exception("No GPU found, or need to change CUDA_VISIBLE_DEVICES number")
+    
+    (OUTPUT_ROOT / "generated/output").mkdir(parents=True, exist_ok=True)
+    
+    norm_size = True
+    num_workers = 1
+    alpha = None
+    if ep.lol:
+        eval_data = DataLoader(dataset=get_eval_set(dataset_path("LOLdataset/eval15/low")), num_workers=num_workers, batch_size=1, shuffle=False)
+        output_folder = output_path("LOLv1")
+        if ep.perc:
+            weight_path = resolve_weight('lolv1/lolv1_28.37_final.pth')
+        else:
+            weight_path = resolve_weight('lolv1/ours_1_28.05.pth')
+        
+            
+    elif ep.lol_v2_real:
+        eval_data = DataLoader(dataset=get_eval_set(dataset_path("LOLv2/Real_captured/Test/Low")), num_workers=num_workers, batch_size=1, shuffle=False)
+        output_folder = output_path("LOLv2_real")
+        if ep.best_GT_mean:
+            weight_path = resolve_weight('lolv2/ours_2r_24.26_final.pth')
+            
+            alpha = 0.81
+        elif ep.best_PSNR:
+            weight_path = resolve_weight('lolv2/ours_2r_24.26_final.pth')
+            alpha = 0.8
+        elif ep.best_SSIM:
+            weight_path = resolve_weight('lolv2/ours_2r_24.26_final.pth')
+            alpha = 0.82
+            
+    elif ep.lol_v2_syn:
+        eval_data = DataLoader(dataset=get_eval_set(dataset_path("LOLv2/Synthetic/Test/Low")), num_workers=num_workers, batch_size=1, shuffle=False)
+        output_folder = output_path("LOLv2_syn")
+        if ep.perc:
+            weight_path = resolve_weight('lolv2_s/ours_lolv2s_26.04_final.pth')
+        else:
+            weight_path = resolve_weight('lolv2_s/ours_2s_25.89_final.pth')
+            
+    elif ep.SICE_grad:
+        eval_data = DataLoader(dataset=get_SICE_eval_set(dataset_path("SICE/SICE_Grad")), num_workers=num_workers, batch_size=1, shuffle=False)
+        output_folder = output_path("SICE_grad")
+        weight_path = resolve_weight('SCIE/SCIE.pth')
+        norm_size = False
+        
+    elif ep.SICE_mix:
+        eval_data = DataLoader(dataset=get_SICE_eval_set(dataset_path("SICE/SICE_Mix")), num_workers=num_workers, batch_size=1, shuffle=False)
+        output_folder = output_path("SICE_mix")
+        weight_path = resolve_weight('SCIE/SCIE.pth')
+        norm_size = False
+        
+    elif ep.unpaired: 
+        if ep.DICM:
+            eval_data = DataLoader(dataset=get_SICE_eval_set(dataset_path("DICM")), num_workers=num_workers, batch_size=1, shuffle=False)
+            output_folder = output_path("DICM")
+        elif ep.LIME:
+            eval_data = DataLoader(dataset=get_SICE_eval_set(dataset_path("LIME")), num_workers=num_workers, batch_size=1, shuffle=False)
+            output_folder = output_path("LIME")
+        elif ep.MEF:
+            eval_data = DataLoader(dataset=get_SICE_eval_set(dataset_path("MEF")), num_workers=num_workers, batch_size=1, shuffle=False)
+            output_folder = output_path("MEF")
+        elif ep.NPE:
+            eval_data = DataLoader(dataset=get_SICE_eval_set(dataset_path("NPE")), num_workers=num_workers, batch_size=1, shuffle=False)
+            output_folder = output_path("NPE")
+        elif ep.VV:
+            eval_data = DataLoader(dataset=get_SICE_eval_set(dataset_path("VV")), num_workers=num_workers, batch_size=1, shuffle=False)
+            output_folder = output_path("VV")
+        elif ep.custome:
+            eval_data = DataLoader(dataset=get_SICE_eval_set(ep.custome_path), num_workers=num_workers, batch_size=1, shuffle=False)
+            output_folder = output_path("custom")
+        alpha = ep.alpha
+        norm_size = False
+        weight_path = ep.unpaired_weights
+        
+    eval_net = ACIDNet().cuda()
+    eval(eval_net, eval_data, weight_path, output_folder,norm_size=norm_size,LOL=ep.lol,v2=ep.lol_v2_real,unpaired=ep.unpaired,alpha=alpha,gamma=ep.gamma)
