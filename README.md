@@ -1,4 +1,4 @@
-<h3 align="center"><font color="#d73a49"><b>A</b></font>symmetric <font color="#d73a49"><b>C</b></font>hromaticity-<font color="#d73a49"><b>I</b></font>ntensity <font color="#d73a49"><b>D</b></font>ecoupling for Low-Light Image Enhancement (ACIDNet)</h3>
+<h3 align="center">𝐀symmetric 𝐂hromaticity-𝐈ntensity 𝐃ecoupling for Low-Light Image Enhancement (ACIDNet)</h3>
 
 <p align="center">
   <b>Pattern Recognition 2026</b>
@@ -15,9 +15,7 @@
 
 ## Abstract
 
-<p align="justify">
-<b>Low-Light Image Enhancement (LLIE) aims to restore visibility and details from images captured under poor illumination conditions. Recent methods based on the Horizontal and Vertical Intensity (HVI) color space typically adopt identical architectures for both intensity and chromaticity branches, limiting their capability to simultaneously recover illumination and preserve color fidelity. To overcome these limitations, we propose the Asymmetric Chromaticity-Intensity Decoupling Network (ACIDNet). The encoder adopts a specialized dual-branch structure tailored to distinct feature characteristics: the Intensity Stream utilizes large-kernel convolutions to capture global illumination priors, whereas the Chromaticity Stream employs residual modules and Statistical Context Blocks (SCB) to rectify color shifts and restore accurate color distributions. Furthermore, we incorporate a Chromaticity-Guided Dual-Domain Attention (CGDA) decoder. Unlike standard concatenation strategies, the CGDA decoder leverages refined chromaticity signals to adaptively modulate intensity reconstruction for improved detail recovery. Experimental results on benchmark datasets demonstrate the effectiveness of ACIDNet compared with advanced methods, particularly in achieving a favorable trade-off between computational efficiency and perceptual quality, as evidenced by its leading LPIPS performance.</b>
-</p>
+Low-Light Image Enhancement (LLIE) aims to restore visibility and details from images captured under poor illumination conditions. Recent methods based on the Horizontal and Vertical Intensity (HVI) color space typically adopt identical architectures for both intensity and chromaticity branches, limiting their capability to simultaneously recover illumination and preserve color fidelity. To overcome these limitations, we propose the **Asymmetric Chromaticity-Intensity Decoupling Network (ACIDNet)**. The encoder adopts a specialized dual-branch structure tailored to distinct feature characteristics: the Intensity Stream utilizes large-kernel convolutions to capture global illumination priors, whereas the Chromaticity Stream employs residual modules and Statistical Context Blocks (SCB) to rectify color shifts and restore accurate color distributions. Furthermore, we incorporate a **Chromaticity-Guided Dual-Domain Attention (CGDA)** decoder. Unlike standard concatenation strategies, the CGDA decoder leverages refined chromaticity signals to adaptively modulate intensity reconstruction for improved detail recovery. Experimental results on benchmark datasets demonstrate the effectiveness of ACIDNet compared with advanced methods, particularly in achieving a favorable trade-off between computational efficiency and perceptual quality, as evidenced by its leading LPIPS performance.
 
 ---
 
