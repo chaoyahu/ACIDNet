@@ -1,6 +1,4 @@
-# ACIDNet
-
-### Asymmetric Chromaticity-Intensity Decoupling for Low-Light Image Enhancement
+### <b>Asymmetric Chromaticity-Intensity Decoupling for Low-Light Image Enhancement</b>
 
 <p align="center">
   <b>Pattern Recognition 2026</b>
