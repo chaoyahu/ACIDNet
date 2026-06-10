@@ -1,4 +1,4 @@
-### <b>Asymmetric Chromaticity-Intensity Decoupling for Low-Light Image Enhancement</b>
+### <b>A</b>symmetric <b>C</b>hromaticity-<b>I</b>ntensity <b>D</b>ecoupling for Low-Light Image Enhancement (ACIDNet)
 
 <p align="center">
   <b>Pattern Recognition 2026</b>
