@@ -148,3 +148,13 @@ If you find this work useful in your research, please consider citing:
   doi     = {10.1016/j.patcog.2026.114139}
 }
 ```
+
+## Contacts
+
+If you have any questions, please contact us or submit an issue to the repository.
+
+**Chaoya Hu** (hucy25@mails.jlu.edu.cn)
+
+---
+
+This codebase is built upon [HVI-CIDNet](https://github.com/Fediory/HVI-CIDNet/). Thanks for their great work!
