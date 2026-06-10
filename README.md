@@ -1,4 +1,4 @@
-### <b>A</b>symmetric <b>C</b>hromaticity-<b>I</b>ntensity <b>D</b>ecoupling for Low-Light Image Enhancement (ACIDNet)
+<h3 align="center"><b>A</b>symmetric <b>C</b>hromaticity-<b>I</b>ntensity <b>D</b>ecoupling for Low-Light Image Enhancement (ACIDNet)</h3>
 
 <p align="center">
   <b>Pattern Recognition 2026</b>
