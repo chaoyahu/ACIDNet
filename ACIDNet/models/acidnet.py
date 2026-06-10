@@ -3,18 +3,18 @@ import torch.nn as nn
 import torch.nn.functional as F
 from huggingface_hub import PyTorchModelHubMixin
 
-from acidnet.models.hvi_transform import RGB_HVI
-from acidnet.models.transformer_utils import LayerNorm
-from acidnet.models.lca import *
+from ACIDNet.models.hvi_transform import RGB_HVI
+from ACIDNet.models.transformer_utils import LayerNorm
+from ACIDNet.models.lca import *
 
 # =========================================================
-# 1. 基础组件 (支持大核卷积动态 Padding)
+# 1. Core building blocks (dynamic padding for large kernels)
 # =========================================================
 
 class ConvNeXtBlock(nn.Module):
     def __init__(self, dim, kernel_size=7, layer_scale_init_value=1e-6):
         super().__init__()
-        # 动态计算 padding，确保任意大核尺寸输入输出分辨率一致
+        # Dynamically compute padding so the spatial size stays unchanged.
         pad_size = kernel_size // 2 
         self.pad = nn.ReflectionPad2d(pad_size)
         self.dwconv = nn.Conv2d(dim, dim, kernel_size=kernel_size, padding=0, groups=dim) 
@@ -51,7 +51,7 @@ class ResBlock(nn.Module):
         return x + self.body(x)
 
 # =========================================================
-# Context Blocks (安全除法加固)
+# Context blocks
 # =========================================================
 
 class StatContextBlock(nn.Module):
@@ -64,7 +64,7 @@ class StatContextBlock(nn.Module):
         if use_mean: input_dim += dim
         if use_std: input_dim += dim
         
-        # 防止极端消融下通道数变为 0
+        # Prevent the channel count from collapsing to zero in ablations.
         mid_dim = max(1, dim // reduction) 
         
         if input_dim > 0:
@@ -109,7 +109,7 @@ class DualPoolContext(nn.Module):
         return x * self.mlp(x_cat)
 
 # =========================================================
-# 2. Attention Utils (添加头数校验)
+# 2. Attention utilities
 # =========================================================
 
 def window_partition(x, window_size):
@@ -139,7 +139,7 @@ class WindowAttention(nn.Module):
         self.window_size = window_size
         self.num_heads = num_heads
         
-        # 确保通道数可以被头数整除，防止运行报错
+        # Ensure the channel dimension is divisible by the number of heads.
         assert dim % num_heads == 0, f"Channel dimension {dim} must be divisible by num_heads {num_heads}"
         head_dim = dim // num_heads
         
@@ -293,7 +293,7 @@ class ACIDNet(nn.Module, PyTorchModelHubMixin):
         
         i_type, hv_type = cfg.get('i_blk', 'convnext'), cfg.get('hv_blk', 'resblock')
 
-        # --- Color Stream (HV) ---
+        # --- Color stream (HV) ---
         self.HVE_block0 = nn.Sequential(
             nn.ReplicationPad2d(1),
             nn.Conv2d(3, ch1, 3, stride=1, padding=0, bias=False)
@@ -307,7 +307,7 @@ class ACIDNet(nn.Module, PyTorchModelHubMixin):
         self.HVE_block3 = NormDownsample(ch3, ch4, use_norm=norm)
         self.HVE_context3 = blk_factory(hv_type, ch4)
         
-        # Stat Block Logic (注入 scb_k)
+        # Stat block logic (scb_k)
         stat_mode = cfg.get('stats', 'full')
         scb_reduction = cfg.get('scb_k', 4) 
         

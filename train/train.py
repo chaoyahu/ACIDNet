@@ -6,13 +6,13 @@ import torch.optim as optim
 import torch.backends.cudnn as cudnn
 import numpy as np
 from torch.utils.data import DataLoader
-from acidnet.models.acidnet import ACIDNet
-from acidnet.data.train_options import option
+from ACIDNet.models.acidnet import ACIDNet
+from ACIDNet.data.train_options import option
 from measure.paired_metrics import metrics
 from eval.infer import eval
-from acidnet.data.data import *
-from acidnet.losses.criteria import *
-from acidnet.data.scheduler import *
+from ACIDNet.data.data import *
+from ACIDNet.losses.criteria import *
+from ACIDNet.data.scheduler import *
 from tqdm import tqdm
 from datetime import datetime
 
@@ -143,7 +143,7 @@ def build_model():
     model = ACIDNet().cuda()
     if opt.start_epoch > 0:
         pth = f"./outputs/checkpoints/train/epoch_{opt.start_epoch}.pth"
-        from acidnet.checkpoints import load_model_weights
+        from ACIDNet.checkpoints import load_model_weights
         load_model_weights(model, pth, map_location=lambda storage, loc: storage)
     return model
 

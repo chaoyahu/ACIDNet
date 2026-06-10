@@ -7,7 +7,7 @@ import numpy as np
 from os import listdir
 from os.path import join
 from PIL import Image
-from acidnet.data.util import *
+from ACIDNet.data.util import *
 from torchvision import transforms as t
 import torch.nn.functional as F
 

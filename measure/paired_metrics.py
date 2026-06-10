@@ -11,7 +11,7 @@ import argparse
 import platform
 from pathlib import Path
 
-from acidnet.paths import DATASET_ROOT, OUTPUT_ROOT
+from ACIDNet.paths import DATASET_ROOT, OUTPUT_ROOT
 
 
 
@@ -95,14 +95,14 @@ def metrics(im_dir, label_dir, use_GT_mean):
             
         # im2 = Image.open(label_dir + name).convert('RGB')
         try:
-            # 1. 尝试直接读取 (例如找 1.jpg 或 1.png)
+            # 1. Try the filename directly (for example 1.jpg or 1.png).
             im2 = Image.open(label_dir + name).convert('RGB')
         except FileNotFoundError:
             try:
-                # 2. 如果报错找不到，强制把后缀换成大写 .JPG 再读一次
+                # 2. Retry with an uppercase .JPG extension.
                 im2 = Image.open(label_dir + name.replace('.jpg', '.JPG')).convert('RGB')
             except FileNotFoundError:
-                # 3. 如果还找不到，强制把后缀换成大写 .PNG 再读一次
+                # 3. Retry with an uppercase .PNG extension.
                 im2 = Image.open(label_dir + name.replace('.png', '.PNG')).convert('RGB')
         
         (h, w) = im2.size

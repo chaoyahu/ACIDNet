@@ -3,7 +3,7 @@ import os
 import torch.utils.data as data
 from os import listdir
 from os.path import join
-from acidnet.data.util import *
+from ACIDNet.data.util import *
 import torch.nn.functional as F
 
 class SICEDatasetFromFolderEval(data.Dataset):

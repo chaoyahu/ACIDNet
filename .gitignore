@@ -19,9 +19,11 @@ results/
 output/
 
 # Private experiments and analysis
+PROJECT_STRUCTURE.md
 ablation/
 visualization/
-docs/
+docs/*
+!docs/图片1.png
 experiments/
 
 # Large model/data artifacts

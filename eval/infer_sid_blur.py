@@ -1,10 +1,10 @@
 import os
 import argparse
 from torchvision.transforms import Compose, ToTensor
-from acidnet.data.data import *
+from ACIDNet.data.data import *
 from torchvision import transforms
 from torch.utils.data import DataLoader
-from acidnet.models.acidnet import ACIDNet
+from ACIDNet.models.acidnet import ACIDNet
 
 
 eval_parser = argparse.ArgumentParser(description='Eval')
@@ -19,7 +19,7 @@ if cuda and not torch.cuda.is_available():
 
 def eval(model, testing_data_loader, model_path, output_folder):
     torch.set_grad_enabled(False)
-    from acidnet.checkpoints import load_model_weights
+    from ACIDNet.checkpoints import load_model_weights
     load_model_weights(model, model_path, map_location=lambda storage, loc: storage)
     model.eval()
     print('Evaluation: ', output_folder)

@@ -2,7 +2,7 @@ import glob
 from tqdm import tqdm
 from PIL import Image
 import imquality.brisque as brisque
-from acidnet.losses.niqe_utils import calculate_niqe
+from ACIDNet.losses.niqe_utils import calculate_niqe
 import argparse
 import numpy as np
 import skimage.color
@@ -10,12 +10,12 @@ import torch
 import warnings
 from pathlib import Path
 
-from acidnet.paths import OUTPUT_ROOT
+from ACIDNet.paths import OUTPUT_ROOT
 
-# 过滤掉 numpy 的 RuntimeWarning，保持输出整洁（因为我们在 niqe_utils 里已经处理了）
+# Filter out NumPy RuntimeWarnings to keep the output clean.
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-# ================= 修复 skimage 的 Monkey Patch =================
+# ================= skimage compatibility patch =================
 _original_rgb2gray = skimage.color.rgb2gray
 def safe_rgb2gray(img):
     if img.ndim == 2:
@@ -48,35 +48,35 @@ def metrics(im_dir, limit=None):
         
     for item in tqdm(files):
         try:
-            # 1. 读取图片 (PIL 默认为 RGB)
+            # 1. Read image (PIL defaults to RGB).
             pil_img = Image.open(item).convert('RGB')
             im_rgb = np.array(pil_img)
             
-            # 2. 检查图片尺寸
-            # NIQE 要求至少 96x96 (默认 block size)
+            # 2. Check image size.
+            # NIQE requires at least 96x96 for the default block size.
             h, w, _ = im_rgb.shape
             if h < 96 or w < 96:
                 # print(f"Skipping small image: {item} ({h}x{w})")
                 continue
 
-            # 3. 计算 BRISQUE
-            # 传入 RGB (H, W, 3), 范围 [0, 255]
+            # 3. Compute BRISQUE.
+            # Input is RGB (H, W, 3) in the [0, 255] range.
             try:
                 score_brisque = brisque.score(im_rgb)
             except Exception:
-                # 兼容性处理
+                # Compatibility fallback.
                 score_brisque = brisque.score(pil_img)
             
-            # 4. 计算 NIQE
-            # ！！！关键点：NIQE Utils 内部期望 BGR 顺序！！！
-            # 将 RGB 转为 BGR
+            # 4. Compute NIQE.
+            # Important: NIQE utilities expect BGR order internally.
+            # Convert RGB to BGR.
             im_bgr = im_rgb[:, :, ::-1] 
             
-            # calculate_niqe 内部会处理 BGR -> Y Channel 的转换
+            # calculate_niqe handles BGR -> Y-channel conversion internally.
             score_niqe = calculate_niqe(im_bgr, crop_border=0)
             
-            # 5. 结果校验与累加
-            # 如果任何一个指标算出来是 NaN (例如纯黑图)，则跳过该图
+            # 5. Validate and accumulate results.
+            # Skip images that produce NaN or inf scores.
             if np.isnan(score_niqe) or np.isinf(score_niqe):
                 # print(f"Invalid NIQE for {item}")
                 continue
@@ -89,8 +89,8 @@ def metrics(im_dir, limit=None):
             avg_niqe += score_niqe
             n += 1
 
-            # 移除 torch.cuda.empty_cache()，因为这里的 NIQE/BRISQUE 主要在 CPU 上跑，
-            # 频繁清理显存会极大地拖慢速度。
+            # torch.cuda.empty_cache() is intentionally omitted because these
+            # metrics run on CPU and clearing GPU memory would slow things down.
 
         except Exception as e:
             print(f"Error processing {item}: {e}")

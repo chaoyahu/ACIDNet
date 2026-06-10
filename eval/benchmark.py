@@ -20,8 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from acidnet.models.acidnet import ACIDNet
-from acidnet.paths import DATASET_ROOT, OUTPUT_ROOT, PROJECT_ROOT
+from ACIDNet.models.acidnet import ACIDNet
+from ACIDNet.paths import DATASET_ROOT, OUTPUT_ROOT, PROJECT_ROOT
 
 
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".bmp", ".JPG", ".PNG", ".JPEG", ".BMP"}
@@ -42,20 +42,20 @@ class EvalSpec:
 
 
 PAIRED_SPECS = [
-    EvalSpec("LOLv1", "acidnet", "experiments/weights/lolv1/lolv1_28.37_final.pth", "LOLdataset/eval15/low", "LOLdataset/eval15/high"),
-    EvalSpec("LOLv2_real", "acidnet", "experiments/weights/lolv2/ours_2r_24.26_final.pth", "LOLv2/Real_captured/Test/Low", "LOLv2/Real_captured/Test/Normal", alpha=0.81),
-    EvalSpec("LOLv2_syn", "acidnet", "experiments/weights/lolv2_s/ours_lolv2s_26.04_final.pth", "LOLv2/Synthetic/Test/Low", "LOLv2/Synthetic/Test/Normal"),
-    EvalSpec("SICE_mix", "acidnet", "experiments/weights/SCIE/SCIE.pth", "SICE/SICE_Mix", "SICE/SICE_Reshape"),
-    EvalSpec("SICE_grad", "acidnet", "experiments/weights/SCIE/SCIE.pth", "SICE/SICE_Grad", "SICE/SICE_Reshape"),
+    EvalSpec("LOLv1", "ACIDNet", "experiments/weights/lolv1/lolv1_28.37_final.pth", "LOLdataset/eval15/low", "LOLdataset/eval15/high"),
+    EvalSpec("LOLv2_real", "ACIDNet", "experiments/weights/lolv2/ours_2r_24.26_final.pth", "LOLv2/Real_captured/Test/Low", "LOLv2/Real_captured/Test/Normal", alpha=0.81),
+    EvalSpec("LOLv2_syn", "ACIDNet", "experiments/weights/lolv2_s/ours_lolv2s_26.04_final.pth", "LOLv2/Synthetic/Test/Low", "LOLv2/Synthetic/Test/Normal"),
+    EvalSpec("SICE_mix", "ACIDNet", "experiments/weights/SCIE/SCIE.pth", "SICE/SICE_Mix", "SICE/SICE_Reshape"),
+    EvalSpec("SICE_grad", "ACIDNet", "experiments/weights/SCIE/SCIE.pth", "SICE/SICE_Grad", "SICE/SICE_Reshape"),
 ]
 
 
 UNPAIRED_SPECS = [
-    EvalSpec("DICM", "acidnet", "experiments/weights/SCIE/SCIE.pth", "DICM"),
-    EvalSpec("LIME", "acidnet", "experiments/weights/SCIE/SCIE.pth", "LIME"),
-    EvalSpec("MEF", "acidnet", "experiments/weights/SCIE/SCIE.pth", "MEF"),
-    EvalSpec("NPE", "acidnet", "experiments/weights/SCIE/SCIE.pth", "NPE"),
-    EvalSpec("VV", "acidnet", "experiments/weights/SCIE/SCIE.pth", "VV"),
+    EvalSpec("DICM", "ACIDNet", "experiments/weights/SCIE/SCIE.pth", "DICM"),
+    EvalSpec("LIME", "ACIDNet", "experiments/weights/SCIE/SCIE.pth", "LIME"),
+    EvalSpec("MEF", "ACIDNet", "experiments/weights/SCIE/SCIE.pth", "MEF"),
+    EvalSpec("NPE", "ACIDNet", "experiments/weights/SCIE/SCIE.pth", "NPE"),
+    EvalSpec("VV", "ACIDNet", "experiments/weights/SCIE/SCIE.pth", "VV"),
 ]
 
 
@@ -86,7 +86,7 @@ def build_model(spec: EvalSpec, device: torch.device) -> torch.nn.Module:
 
 
 def load_weight(model: torch.nn.Module, weight_path: Path, device: torch.device) -> None:
-    from acidnet.checkpoints import load_model_weights
+    from ACIDNet.checkpoints import load_model_weights
     load_model_weights(model, weight_path, map_location=device, strict=True)
 
 

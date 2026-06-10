@@ -1,6 +1,6 @@
 import argparse
 
-from acidnet.paths import DATASET_ROOT, OUTPUT_ROOT
+from ACIDNet.paths import DATASET_ROOT, OUTPUT_ROOT
 
 
 def _str2bool(v):

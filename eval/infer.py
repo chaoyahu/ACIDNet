@@ -2,12 +2,12 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import argparse
 from tqdm import tqdm
-from acidnet.data.data import *
+from ACIDNet.data.data import *
 from torchvision import transforms
 from torch.utils.data import DataLoader
-from acidnet.losses.criteria import *
-from acidnet.models.acidnet import ACIDNet
-from acidnet.paths import DATASET_ROOT, OUTPUT_ROOT, WEIGHT_ROOT
+from ACIDNet.losses.criteria import *
+from ACIDNet.models.acidnet import ACIDNet
+from ACIDNet.paths import DATASET_ROOT, OUTPUT_ROOT, WEIGHT_ROOT
 
 
 def dataset_path(path):
@@ -24,7 +24,7 @@ def resolve_weight(path):
 
 def eval(model, testing_data_loader, model_path, output_folder,norm_size=True,LOL=False,v2=False,unpaired=False,alpha=1.0,gamma=1.0):
     torch.set_grad_enabled(False)
-    from acidnet.checkpoints import load_model_weights
+    from ACIDNet.checkpoints import load_model_weights
     load_model_weights(model, model_path, map_location=lambda storage, loc: storage)
     print('Pre-trained model is loaded.')
     model.eval()

@@ -1,70 +1,125 @@
 # ACIDNet
 
-Official implementation of ACIDNet for low-light image enhancement.
+### Asymmetric Chromaticity-Intensity Decoupling for Low-Light Image Enhancement
 
-This repository contains the core model, dataset loaders, training entrypoint,
-inference scripts, and metric tools required to reproduce the main ACIDNet
-experiments. Datasets and generated outputs are intentionally kept outside
-version control.
+<p align="center">
+  <b>Pattern Recognition 2026</b>
+</p>
+
+<p align="center">
+  <a href="https://doi.org/10.1016/j.patcog.2026.114139">📄 Paper</a> &nbsp;|&nbsp;
+  <a href="https://pan.baidu.com/s/1ajTuReBVFxdJeix5Q0kiDA?pwd=2026">📦 Weights</a>
+</p>
+
+<p align="center">
+  <img src="docs/图片1.png" width="100%">
+</p>
+
+## Abstract
+
+<p align="justify">
+<b>Low-Light Image Enhancement (LLIE) aims to restore visibility and details from images captured under poor illumination conditions. Recent methods based on the Horizontal and Vertical Intensity (HVI) color space typically adopt identical architectures for both intensity and chromaticity branches, limiting their capability to simultaneously recover illumination and preserve color fidelity. To overcome these limitations, we propose the Asymmetric Chromaticity-Intensity Decoupling Network (ACIDNet). The encoder adopts a specialized dual-branch structure tailored to distinct feature characteristics: the Intensity Stream utilizes large-kernel convolutions to capture global illumination priors, whereas the Chromaticity Stream employs residual modules and Statistical Context Blocks (SCB) to rectify color shifts and restore accurate color distributions. Furthermore, we incorporate a Chromaticity-Guided Dual-Domain Attention (CGDA) decoder. Unlike standard concatenation strategies, the CGDA decoder leverages refined chromaticity signals to adaptively modulate intensity reconstruction for improved detail recovery. Experimental results on benchmark datasets demonstrate the effectiveness of ACIDNet compared with advanced methods, particularly in achieving a favorable trade-off between computational efficiency and perceptual quality, as evidenced by its leading LPIPS performance.</b>
+</p>
+
+---
 
 ## Installation
 
 ```bash
 conda create -n acidnet python=3.9
 conda activate acidnet
+
 pip install -r requirements.txt
 ```
 
-Install a PyTorch build that matches your CUDA version before running GPU
-training or evaluation.
+Install a PyTorch build compatible with your CUDA environment before training or evaluation.
 
-## Data
+## Pretrained Weights
 
-Set `ACIDNET_DATASET_ROOT` to the directory containing the benchmark datasets:
+**Baidu Netdisk**
+
+* Link: [Baidu Netdisk](https://pan.baidu.com/s/1ajTuReBVFxdJeix5Q0kiDA?pwd=2026)
+* Extraction Code: `2026`
+
+## Dataset
+
+Set the dataset root directory:
 
 ```bash
 export ACIDNET_DATASET_ROOT=/path/to/datasets
 ```
 
-Expected dataset layout:
+<details>
+<summary><b>Expected Directory Structure</b></summary>
 
 ```text
 $ACIDNET_DATASET_ROOT/
-  LOLdataset/
-    our485/
-    eval15/low/
-    eval15/high/
-  LOLv2/
-    Real_captured/
-      Train/
-      Test/Low/
-      Test/Normal/
-    Synthetic/
-      Train/
-      Test/Low/
-      Test/Normal/
+├── LOLdataset/
+│   ├── our485/
+│   └── eval15/
+│       ├── low/
+│       └── high/
+└── LOLv2/
+    ├── Real_captured/
+    │   ├── Train/
+    │   └── Test/
+    │       ├── Low/
+    │       └── Normal/
+    └── Synthetic/
+        ├── Train/
+        └── Test/
+            ├── Low/
+            └── Normal/
 ```
+
+</details>
 
 ## Evaluation
 
-Run benchmark inference and metrics:
+Benchmark evaluation:
 
 ```bash
-python -m eval.benchmark --dataset-root "$ACIDNET_DATASET_ROOT" --paired-only
+python -m eval.benchmark \
+  --dataset-root "$ACIDNET_DATASET_ROOT" \
+  --paired-only
 ```
 
-Run a quick smoke test on one image per dataset:
+Quick sanity check:
 
 ```bash
-python -m eval.benchmark --dataset-root "$ACIDNET_DATASET_ROOT" --paired-only --limit 1
+python -m eval.benchmark \
+  --dataset-root "$ACIDNET_DATASET_ROOT" \
+  --paired-only \
+  --limit 1
 ```
 
-Results are written to `outputs/benchmark_metrics.json` and
-`outputs/benchmark_metrics.csv`.
+Results are saved to:
+
+```text
+outputs/benchmark_metrics.json
+outputs/benchmark_metrics.csv
+```
+
+### Metric Evaluation
+
+Paired metrics:
+
+```bash
+python -m measure.paired_metrics \
+  --pred-dir outputs/benchmark/LOLv2_syn \
+  --gt-dir "$ACIDNET_DATASET_ROOT/LOLv2/Synthetic/Test/Normal"
+```
+
+Unpaired metrics:
+
+```bash
+python -m measure.unpaired_metrics \
+  --pred-dir outputs/benchmark/DICM
+```
 
 ## Training
 
-Check that the training pipeline can initialize:
+Verify the training pipeline:
 
 ```bash
 python -m train.train --dataset lol_v1 --dry_run
@@ -76,33 +131,24 @@ Start training:
 python -m train.train --dataset lol_v1
 ```
 
-Checkpoints are written under `outputs/checkpoints/`.
-
-## Metrics
-
-Calculate paired metrics from existing predictions:
-
-```bash
-python -m measure.paired_metrics \
-  --pred-dir outputs/benchmark/LOLv2_syn \
-  --gt-dir "$ACIDNET_DATASET_ROOT/LOLv2/Synthetic/Test/Normal"
-```
-
-Calculate unpaired metrics:
-
-```bash
-python -m measure.unpaired_metrics --pred-dir outputs/benchmark/DICM
-```
-
-## Repository Layout
+Checkpoints are saved under:
 
 ```text
-acidnet/      Core ACIDNet package: model, data loaders, losses, shared paths
-train/        Training entrypoint
-eval/         Inference and benchmark evaluation entrypoints
-measure/      Metric scripts
-docs/         Public documentation and figures
+outputs/checkpoints/
 ```
 
-Large files, generated outputs, local datasets, private experiments, and
-analysis scripts are ignored by default.
+## Citation
+
+If you find this work useful in your research, please consider citing:
+
+```bibtex
+@article{hu2026acidnet,
+  title   = {ACIDNet: Asymmetric Chromaticity-Intensity Decoupling for Low-Light Image Enhancement},
+  author  = {Hu, Chaoya and Li, Huiying},
+  journal = {Pattern Recognition},
+  year    = {2026},
+  pages   = {114139},
+  issn    = {0031-3203},
+  doi     = {10.1016/j.patcog.2026.114139}
+}
+```

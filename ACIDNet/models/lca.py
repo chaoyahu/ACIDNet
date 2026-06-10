@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from einops import rearrange
-from acidnet.models.transformer_utils import *
+from ACIDNet.models.transformer_utils import *
 
 # Cross Attention Block
 class CAB(nn.Module):

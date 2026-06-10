@@ -7,7 +7,7 @@ import torch.utils.data as data
 import numpy as np
 from os import listdir
 from os.path import join
-from acidnet.data.util import *
+from ACIDNet.data.util import *
 
 class FiveKDatasetFromFolder(data.Dataset):
     def __init__(self, data_dir, transform=None):

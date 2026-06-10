@@ -80,10 +80,8 @@ def metrics(im_dir, label_dir, use_GT_mean):
         n += 1
         im1 = Image.open(item).convert('RGB') 
 
-        # -------- 修改开始 --------
-        # 使用 os.path.basename 自动处理文件名，兼容 Linux 和 Windows
+        # Use os.path.basename so the code works on both Linux and Windows.
         name = os.path.basename(item)
-        # -------- 修改结束 --------
         
         if mea.SID:
             data_filenames = [join(label_dir, x) for x in listdir(label_dir) if is_image_file(x)]

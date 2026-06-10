@@ -1,8 +1,8 @@
 from torchvision.transforms import Compose, ToTensor, RandomCrop, RandomHorizontalFlip, RandomVerticalFlip
-from acidnet.data.lol_dataset import *
-from acidnet.data.eval_sets import *
-from acidnet.data.sid_blur_dataset import *
-from acidnet.data.fivek import *
+from ACIDNet.data.lol_dataset import *
+from ACIDNet.data.eval_sets import *
+from ACIDNet.data.sid_blur_dataset import *
+from ACIDNet.data.fivek import *
 
 def transform1(size=256):
     return Compose([

@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from acidnet.losses.vgg_arch import VGGFeatureExtractor, Registry
-from acidnet.losses.loss_utils import *
+from ACIDNet.losses.vgg_arch import VGGFeatureExtractor, Registry
+from ACIDNet.losses.loss_utils import *
 
 
 _reduction_modes = ['none', 'mean', 'sum']
